@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSU 2025 Campus Safety Report Dashboard</title>
+
+    <!-- Emoji Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦫</text></svg>">
+
+    <!-- Social Media Preview Meta Tags -->
+    <meta property="og:title" content="OSU 2025 Campus Safety Report Dashboard">
+    <meta property="og:description" content="A visual dashboard of crime and fire statistics from the 2025 Oregon State University Annual Security & Fire Safety Report.">
+    <meta property="og:image" content="images/preview.png">
+    <meta property="og:url" content="#"> <!-- The actual URL would go here when deployed -->
+    <meta name="twitter:card" content="summary_large_image">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Tailwind gray-50 */
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            min-height: 400px;
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <header class="mb-6">
+            <h1 class="text-4xl font-bold text-gray-800 text-center">OSU Annual Safety Report Dashboard</h1>
+            <p id="dashboard-subtitle" class="text-center text-gray-500 mt-2">Visualizing Crime & Fire Statistics for All Campuses (2022-2024)</p>
+        </header>
+
+        <!-- Campus Selector -->
+        <div class="mb-8 max-w-xs mx-auto">
+            <label for="campus-select" class="block text-sm font-medium text-gray-700 mb-1">Select a Campus:</label>
+            <select id="campus-select" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm rounded-md shadow-sm">
+                <option value="All">All Campuses</option>
+                <option value="Corvallis">Corvallis</option>
+                <option value="Cascades">OSU-Cascades</option>
+                <option value="HMSC">Hatfield Marine Science Center</option>
+                <option value="Portland">OSU Portland Center</option>
+                <option value="EOU">OSU at EOU</option>
+            </select>
+        </div>
+
+
+        <!-- Charts Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Chart 1: Crime Trends -->
+            <div class="lg:col-span-2">
+                <div class="chart-container">
+                    <canvas id="crimeTrendsChart"></canvas>
+                </div>
+            </div>
+            <!-- Chart 2: 2024 Offense Comparison -->
+            <div>
+                <div class="chart-container">
+                    <canvas id="offenseComparisonChart"></canvas>
+                </div>
+            </div>
+            <!-- Chart 3: Fire Causes -->
+            <div>
+                <div class="chart-container">
+                    <canvas id="fireCausesChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Resources Section -->
+        <div class="mt-12 bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Quick Safety Resources</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-center">
+                <a href="tel:541-737-3010" class="block p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <div class="text-2xl mb-2">🛡️</div>
+                    <h3 class="font-semibold text-gray-900">Dept. of Public Safety</h3>
+                    <p class="text-sm text-gray-500">(541) 737-3010</p>
+                </a>
+                <a href="tel:541-322-3110" class="block p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <div class="text-2xl mb-2">🏔️</div>
+                    <h3 class="font-semibold text-gray-900">OSU-Cascades Safety</h3>
+                    <p class="text-sm text-gray-500">(541) 322-3110</p>
+                </a>
+                <a href="tel:541-737-2131" class="block p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <div class="text-2xl mb-2">🧠</div>
+                    <h3 class="font-semibold text-gray-900">Counseling (CAPS)</h3>
+                    <p class="text-sm text-gray-500">(541) 737-2131</p>
+                </a>
+                <a href="tel:541-737-2030" class="block p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <div class="text-2xl mb-2">🤝</div>
+                    <h3 class="font-semibold text-gray-900">Advocacy (CAPE)</h3>
+                    <p class="text-sm text-gray-500">(541) 737-2030</p>
+                </a>
+                <a href="https://eoa.oregonstate.edu/" target="_blank" rel="noopener noreferrer" class="block p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                     <div class="text-2xl mb-2">⚖️</div>
+                    <h3 class="font-semibold text-gray-900">Equal Opportunity (EOA)</h3>
+                    <p class="text-sm text-gray-500">Website & Reporting</p>
+                </a>
+                 <a href="tel:911" class="block p-4 bg-red-50 rounded-lg hover:bg-red-100 transition">
+                    <div class="text-2xl mb-2">🚨</div>
+                    <h3 class="font-semibold text-red-800">Emergency</h3>
+                    <p class="text-sm text-red-600">Dial 911</p>
+                </a>
+            </div>
+        </div>
+
+
+        <!-- Footer -->
+        <footer class="text-center mt-12 text-sm text-gray-400">
+            <p>Data sourced from the Oregon State University 2025 Annual Security & Fire Safety Report.</p>
+            <p class="mb-2">This is a visual representation and does not replace the official report.</p>
+            <a href="https://clery.oregonstate.edu/sites/clery.oregonstate.edu/files/2025-09/2025_ASFSR.pdf" target="_blank" rel="noopener noreferrer" class="text-orange-600 hover:underline font-semibold">View Full PDF Report</a>
+        </footer>
+    </div>
+
+    <script>
+        // OSU Theme Colors & Data
+        const osuOrange = '#D73F09';
+        const osuBlack = '#000000';
+        const osuGray1 = '#6B7280';
+        const osuGray2 = '#9CA3AF';
+        const osuOrangeRgba = 'rgba(215, 63, 9, 0.7)';
+        const osuBlackRgba = 'rgba(0, 0, 0, 0.7)';
+        const osuGray1Rgba = 'rgba(107, 114, 128, 0.7)';
+
+
+        const campusData = {
+            'Corvallis': {
+                crime: {
+                    '2022': { 'Rape': 10, 'Burglary': 18, 'Agg. Assault': 8, 'MV Theft': 19, 'Stalking': 23, 'Drug Referrals': 59, 'Liquor Referrals': 252 },
+                    '2023': { 'Rape': 8, 'Burglary': 15, 'Agg. Assault': 6, 'MV Theft': 31, 'Stalking': 22, 'Drug Referrals': 40, 'Liquor Referrals': 192 },
+                    '2024': { 'Rape': 12, 'Burglary': 7, 'Agg. Assault': 13, 'MV Theft': 52, 'Stalking': 30, 'Drug Referrals': 74, 'Liquor Referrals': 307 },
+                },
+                fire: {
+                    '2022': { 'Intentional': 3, 'Unintentional (Cooking)': 2, 'Unintentional (Other)': 1 },
+                    '2023': { 'Intentional': 2, 'Unintentional (Cooking)': 3, 'Unintentional (Other)': 3 },
+                    '2024': { 'Intentional': 4, 'Unintentional (Cooking)': 3, 'Unintentional (Other)': 3 },
+                }
+            },
+            'Cascades': {
+                crime: {
+                    '2022': { 'Rape': 1, 'Burglary': 0, 'Agg. Assault': 0, 'MV Theft': 0, 'Stalking': 0, 'Drug Referrals': 6, 'Liquor Referrals': 1 },
+                    '2023': { 'Rape': 0, 'Burglary': 0, 'Agg. Assault': 0, 'MV Theft': 0, 'Stalking': 4, 'Drug Referrals': 5, 'Liquor Referrals': 5 },
+                    '2024': { 'Rape': 0, 'Burglary': 1, 'Agg. Assault': 0, 'MV Theft': 0, 'Stalking': 1, 'Drug Referrals': 5, 'Liquor Referrals': 18 },
+                },
+                fire: { '2022': {}, '2023': {}, '2024': {} }
+            },
+            'HMSC': {
+                crime: {
+                    '2022': { 'Rape': 2, 'Burglary': 0, 'Agg. Assault': 1, 'MV Theft': 0, 'Stalking': 0, 'Drug Referrals': 0, 'Liquor Referrals': 0 },
+                    '2023': { 'Rape': 0, 'Burglary': 0, 'Agg. Assault': 0, 'MV Theft': 0, 'Stalking': 0, 'Drug Referrals': 0, 'Liquor Referrals': 0 },
+                    '2024': { 'Rape': 0, 'Burglary': 0, 'Agg. Assault': 0, 'MV Theft': 0, 'Stalking': 0, 'Drug Referrals': 0, 'Liquor Referrals': 0 },
+                },
+                fire: { '2022': {}, '2023': {}, '2024': {} }
+            },
+            'Portland': {
+                crime: {
+                    '2022': { 'Rape': 0, 'Burglary': 0, 'Agg. Assault': 0, 'MV Theft': 0, 'Stalking': 0, 'Drug Referrals': 0, 'Liquor Referrals': 0 },
+                    '2023': { 'Rape': 0, 'Burglary': 0, 'Agg. Assault': 1, 'MV Theft': 0, 'Stalking': 0, 'Drug Referrals': 0, 'Liquor Referrals': 0 },
+                    '2024': { 'Rape': 0, 'Burglary': 0, 'Agg. Assault': 0, 'MV Theft': 0, 'Stalking': 0, 'Drug Referrals': 0, 'Liquor Referrals': 0 },
+                },
+                 fire: { '2022': {}, '2023': {}, '2024': {} }
+            },
+            'EOU': {
+                crime: {
+                    '2022': { 'Rape': 0, 'Burglary': 0, 'Agg. Assault': 0, 'MV Theft': 0, 'Stalking': 0, 'Drug Referrals': 0, 'Liquor Referrals': 0 },
+                    '2023': { 'Rape': 0, 'Burglary': 0, 'Agg. Assault': 0, 'MV Theft': 0, 'Stalking': 0, 'Drug Referrals': 0, 'Liquor Referrals': 0 },
+                    '2024': { 'Rape': 0, 'Burglary': 0, 'Agg. Assault': 0, 'MV Theft': 0, 'Stalking': 0, 'Drug Referrals': 0, 'Liquor Referrals': 0 },
+                },
+                 fire: { '2022': {}, '2023': {}, '2024': {} }
+            }
+        };
+
+        let charts = {};
+
+        function getAggregatedData(selectedCampus) {
+            const campusesToAggregate = selectedCampus === 'All' ? Object.keys(campusData) : [selectedCampus];
+            const years = ['2022', '2023', '2024'];
+            const crimeTypes = ['Rape', 'Burglary', 'Agg. Assault', 'MV Theft', 'Stalking', 'Drug Referrals', 'Liquor Referrals'];
+            const fireTypes = ['Intentional', 'Unintentional (Cooking)', 'Unintentional (Other)'];
+
+            let aggregated = {
+                crime: { '2022': {}, '2023': {}, '2024': {} },
+                fire: { '2022': {}, '2023': {}, '2024': {} }
+            };
+
+            // Initialize aggregated data structures
+            years.forEach(year => {
+                crimeTypes.forEach(type => { aggregated.crime[year][type] = 0; });
+                fireTypes.forEach(type => { aggregated.fire[year][type] = 0; });
+            });
+
+            campusesToAggregate.forEach(campusName => {
+                const campus = campusData[campusName];
+                years.forEach(year => {
+                    crimeTypes.forEach(type => {
+                        aggregated.crime[year][type] += (campus.crime[year] && campus.crime[year][type]) || 0;
+                    });
+                    fireTypes.forEach(type => {
+                        aggregated.fire[year][type] += (campus.fire[year] && campus.fire[year][type]) || 0;
+                    });
+                });
+            });
+            return aggregated;
+        }
+
+        function createCrimeTrendsChart(data) {
+            const ctx = document.getElementById('crimeTrendsChart').getContext('2d');
+            charts.crimeTrends = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['2022', '2023', '2024'],
+                    datasets: [
+                        { label: 'Motor Vehicle Theft', data: [data.crime['2022']['MV Theft'], data.crime['2023']['MV Theft'], data.crime['2024']['MV Theft']], borderColor: osuOrange, backgroundColor: osuOrange, tension: 0.1 },
+                        { label: 'Stalking', data: [data.crime['2022']['Stalking'], data.crime['2023']['Stalking'], data.crime['2024']['Stalking']], borderColor: osuBlack, backgroundColor: osuBlack, tension: 0.1 },
+                        { label: 'Burglary', data: [data.crime['2022']['Burglary'], data.crime['2023']['Burglary'], data.crime['2024']['Burglary']], borderColor: osuGray1, backgroundColor: osuGray1, tension: 0.1 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Selected On-Campus Crime Trends (2022-2024)', font: { size: 18 } }, legend: { position: 'top' } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'Number of Incidents' } } } }
+            });
+        }
+        
+        function createOffenseComparisonChart(data) {
+             const ctx = document.getElementById('offenseComparisonChart').getContext('2d');
+             const crimeData2024 = data.crime['2024'];
+             const datasetData = [crimeData2024['Rape'], crimeData2024['Burglary'], crimeData2024['Agg. Assault'], crimeData2024['MV Theft'], crimeData2024['Stalking'], crimeData2024['Drug Referrals'], crimeData2024['Liquor Referrals']];
+
+             const maxValue = Math.max(...datasetData);
+
+             const backgroundColors = datasetData.map(value => value === maxValue && maxValue > 0 ? osuOrangeRgba : osuGray1Rgba);
+             const borderColors = datasetData.map(value => value === maxValue && maxValue > 0 ? osuOrange : osuGray1);
+
+             charts.offenseComparison = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Rape', 'Burglary', 'Agg. Assault', 'MV Theft', 'Stalking', 'Drug Referrals', 'Liquor Referrals'],
+                    datasets: [{
+                        label: 'Reported Incidents',
+                        data: datasetData,
+                        backgroundColor: backgroundColors,
+                        borderColor: borderColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'On-Campus Offenses & Referrals in 2024', font: { size: 18 } }, legend: { display: false } }, scales: { x: { beginAtZero: true, title: { display: true, text: 'Number of Incidents/Referrals' } } } }
+             });
+        }
+
+        function createFireCausesChart(data) {
+            const ctx = document.getElementById('fireCausesChart').getContext('2d');
+            const fireData2024 = data.fire['2024'];
+            const totalFires = Object.values(fireData2024).reduce((a, b) => a + b, 0);
+
+            if (charts.fireCauses) {
+                charts.fireCauses.destroy();
+            }
+
+            if (totalFires === 0) {
+                 ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                 ctx.textAlign = "center";
+                 ctx.textBaseline = "middle";
+                 ctx.fillStyle = osuGray1;
+                 ctx.font = "16px 'Inter'";
+                 ctx.fillText("No On-Campus Fires Reported in 2024", ctx.canvas.width / 2, ctx.canvas.height / 2);
+                 return;
+            }
+
+            charts.fireCauses = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Intentional', 'Unintentional (Cooking)', 'Unintentional (Other)'],
+                    datasets: [{
+                        label: 'Number of Fires',
+                        data: [fireData2024['Intentional'], fireData2024['Unintentional (Cooking)'], fireData2024['Unintentional (Other)']],
+                        backgroundColor: [osuBlack, osuOrange, osuGray1],
+                        hoverOffset: 4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'On-Campus Student Housing Fire Causes (2024)', font: { size: 18 } }, legend: { position: 'bottom' } } }
+            });
+        }
+
+        function updateDashboard(selectedCampus) {
+            const data = getAggregatedData(selectedCampus);
+
+            // Destroy old charts
+            Object.values(charts).forEach(chart => {
+                if (chart) chart.destroy();
+            });
+            charts = {};
+            
+            // Update subtitle
+            const campusName = selectedCampus === 'HMSC' ? 'Hatfield Marine Science Center' : 
+                               selectedCampus === 'EOU' ? 'OSU at EOU' :
+                               selectedCampus === 'Portland' ? 'OSU Portland Center' :
+                               selectedCampus === 'All' ? 'All Campuses' : `OSU-${selectedCampus}`;
+            document.getElementById('dashboard-subtitle').textContent = `Visualizing Crime & Fire Statistics for ${campusName} (2022-2024)`;
+
+            // Create new charts
+            createCrimeTrendsChart(data);
+            createOffenseComparisonChart(data);
+            createFireCausesChart(data);
+        }
+
+        document.getElementById('campus-select').addEventListener('change', (e) => {
+            updateDashboard(e.target.value);
+        });
+
+        // Initial load
+        updateDashboard('All');
+        
+    </script>
+</body>
+</html>
